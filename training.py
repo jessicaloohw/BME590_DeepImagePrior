@@ -19,9 +19,14 @@ def main():
     ITERATIONS_TO_SAVE = 100
     SAVE_FOLDER = ''
 
-    # Build network:
+    # Placeholders:
     x = tf.placeholder(tf.float32, shape=[1, None, None, 1])
-    y = network.inference(x, network_name=NETWORK_NAME)
+    h = tf.placeholder(tf.int32)
+    w = tf.placeholder(tf.int32)
+    c = tf.placeholder(tf.int32)
+
+    # Network:
+    y = network.inference(network_name=NETWORK_NAME, image_height=h, image_width=w, image_channels=c)
     loss = network.loss(y, x, loss_name=LOSS_NAME)
 
     # (KRISTEN) Create different optimizers here:
@@ -32,11 +37,15 @@ def main():
     with tf.Session() as sess:
 
         sess.run(tf.global_variables_initializer())
+        input_image = hf.get_training_image(FILENAME)
 
         for i in range(NUM_ITERATIONS):
-            if i == 0:
-                input_image = hf.get_training_image(FILENAME)
-            _, input_image = sess.run([train_op, y], feed_dict={x: input_image})
+            _, output_image = sess.run([train_op, y], feed_dict={x: input_image,
+                                                                 h: input_image.shape[0],
+                                                                 w: input_image.shape[1],
+                                                                 c: input_image.shape[2]
+                                                                 }
+                                       )
 
             if i % ITERATIONS_TO_SAVE == 0:
                 # Save model
