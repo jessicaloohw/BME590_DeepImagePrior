@@ -12,6 +12,20 @@ def get_training_image(filename):
     return image
 
 
+def get_noise_matrix(h, w, c):
+    """
+    (DAVID) Create random uniform noise matrix
+
+    :param h: height
+    :param w: width
+    :param c: number of channels
+    :return: noise [1, h, w, c]
+    """
+
+    noise = None
+    return noise
+
+
 def calculate_metrics(image, metrics_name):
     """
     (DAVID) To calculate metrics for image quality evaluation
