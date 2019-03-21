@@ -1,11 +1,13 @@
 import tensorflow as tf
 
-def inference(network_name, image_height, image_width, image_channels):
+def inference(network_name, z, image_channels):
     """
     (JESSICA) Network architecture
 
     :param network_name: to select architecture
                          string
+    :param z: the input noise matrix
+              float32 [1, IMAGE_HEIGHT, IMAGE_WIDTH, 32]
     :param image_height: int
     :param image_width: int
     :param image_channels: int
@@ -16,15 +18,14 @@ def inference(network_name, image_height, image_width, image_channels):
     initializer = tf.contrib.layers.variance_scaling_initializer()
     regularizer = tf.contrib.layers.l2_regularizer(0.0001)
 
-    # Initial noise:
-    x1 = tf.random_uniform([1, image_height, image_width, 32])
-    print(x1)
+    # Input noise:
+    print(z)
 
     # Create different architectures here:
     if network_name == 'unet':
 
         with tf.variable_scope('encoder1'):
-            x2 = tf.layers.conv2d(x1, 64, [3, 3], [1, 1], "SAME",
+            x2 = tf.layers.conv2d(z, 64, [3, 3], [1, 1], "SAME",
                                   activation=None,
                                   use_bias=True,
                                   kernel_initializer=initializer,

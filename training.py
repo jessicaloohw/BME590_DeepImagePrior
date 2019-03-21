@@ -20,14 +20,13 @@ def main():
     SAVE_FOLDER = ''
 
     # Placeholders:
-    x = tf.placeholder(tf.float32, shape=[1, None, None, 1])
-    h = tf.placeholder(tf.int32)
-    w = tf.placeholder(tf.int32)
-    c = tf.placeholder(tf.int32)
+    z = tf.placeholder(tf.float32, shape=[1, None, None, 1]) # input noise
+    x = tf.placeholder(tf.float32, shape=[1, None, None, 1]) # input image
+    c = tf.placeholder(tf.int32)                             # number of channels
 
     # Network:
-    y = network.inference(network_name=NETWORK_NAME, image_height=h, image_width=w, image_channels=c)
-    loss = network.loss(y, x, loss_name=LOSS_NAME)
+    y = network.inference(NETWORK_NAME, z, c)
+    loss = network.loss(y, x, LOSS_NAME)
 
     # (KRISTEN) Create different optimizers here:
     if OPTIMIZER_TYPE == 'sgd':
@@ -37,12 +36,13 @@ def main():
     with tf.Session() as sess:
 
         sess.run(tf.global_variables_initializer())
+
         input_image = hf.get_training_image(FILENAME)
+        input_noise = hf.get_noise_matrix(input_image.shape[0], input_image.shape[1], 32)
 
         for i in range(NUM_ITERATIONS):
-            _, output_image = sess.run([train_op, y], feed_dict={x: input_image,
-                                                                 h: input_image.shape[0],
-                                                                 w: input_image.shape[1],
+            _, output_image = sess.run([train_op, y], feed_dict={z: input_noise,
+                                                                 x: input_image,
                                                                  c: input_image.shape[2]
                                                                  }
                                        )
