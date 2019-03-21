@@ -1,26 +1,27 @@
 import tensorflow as tf
 
-def inference(x1, network_name):
+def inference(network_name, image_height, image_width, image_channels):
     """
     (JESSICA) Network architecture
 
-    :param x1: the input image
-               float32 tensor [1, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS]
     :param network_name: to select architecture
                          string
+    :param image_height: int
+    :param image_width: int
+    :param image_channels: int
     :return: output: the denoised image
                      float32 tensor [1, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS]
     """
 
-    OUTPUT_CHANNELS = x1.get_shape().as_list()[3]
-
     initializer = tf.contrib.layers.variance_scaling_initializer()
     regularizer = tf.contrib.layers.l2_regularizer(0.0001)
 
+    # Initial noise:
+    x1 = tf.random_uniform([1, image_height, image_width, 32])
+    print(x1)
+
     # Create different architectures here:
     if network_name == 'unet':
-
-        print(x1)
 
         with tf.variable_scope('encoder1'):
             x2 = tf.layers.conv2d(x1, 64, [3, 3], [1, 1], "SAME",
@@ -253,7 +254,7 @@ def inference(x1, network_name):
             print(x10)
 
         with tf.variable_scope('prediction'):
-            output = tf.layers.conv2d(x10, OUTPUT_CHANNELS, [1, 1], [1, 1], "SAME",
+            output = tf.layers.conv2d(x10, image_channels, [1, 1], [1, 1], "SAME",
                                       activation=None,
                                       use_bias=True,
                                       kernel_initializer=initializer,
