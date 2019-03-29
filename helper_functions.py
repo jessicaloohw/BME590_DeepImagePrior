@@ -15,8 +15,8 @@ def get_training_image(filename):
     """
 
     image = mpimg.imread(filename)
-    # hard coded to crop to smallest image 508x940
-    image = image[0:508, 0:940]
+    # hard coded to crop to smallest image 496x928
+    image = image[0:496, 0:928]
     image = np.float32(image)
     # normalize
     image = image/255
