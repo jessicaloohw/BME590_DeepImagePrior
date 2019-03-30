@@ -31,6 +31,8 @@ def main():
     # (KRISTEN) Create different optimizers here:
     if OPTIMIZER_TYPE == 'sgd':
         train_op = tf.train.GradientDescentOptimizer(learning_rate=LEARNING_RATE).minimize(loss)
+    if OPTIMIZER_TYPE == 'adam':
+        train_op = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE).minimize(loss)
 
     # Start session:
     with tf.Session() as sess:

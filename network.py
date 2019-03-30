@@ -284,5 +284,5 @@ def loss(y, x, loss_name):
 
     # Create different losses here:
     if loss_name == 'mse':
-        loss = None
-        return loss
+        loss = tf.reduce_mean((y-x)**2)
+    return loss
