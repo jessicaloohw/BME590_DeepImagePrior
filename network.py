@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-def inference(network_name, z, image_channels):
+def inference(network_name, z):
     """
     (JESSICA) Network architecture
 
@@ -10,7 +10,6 @@ def inference(network_name, z, image_channels):
               float32 [1, IMAGE_HEIGHT, IMAGE_WIDTH, 32]
     :param image_height: int
     :param image_width: int
-    :param image_channels: int
     :return: output: the denoised image
                      float32 tensor [1, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS]
     """
@@ -255,7 +254,7 @@ def inference(network_name, z, image_channels):
             print(x10)
 
         with tf.variable_scope('prediction'):
-            output = tf.layers.conv2d(x10, image_channels, [1, 1], [1, 1], "SAME",
+            output = tf.layers.conv2d(x10, 1, [1, 1], [1, 1], "SAME",
                                       activation=None,
                                       use_bias=True,
                                       kernel_initializer=initializer,
