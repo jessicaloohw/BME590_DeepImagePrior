@@ -14,12 +14,12 @@ def main():
     # Training parameters:
     NETWORK_NAME = 'unet'
     LOSS_NAME = 'mse'
-    NUM_ITERATIONS = 1000
+    NUM_ITERATIONS = 100
     OPTIMIZER_TYPE = 'sgd'
     LEARNING_RATE = 0.0001
 
     # Saving parameters:
-    ITERATIONS_TO_SAVE = 100
+    ITERATIONS_TO_SAVE = 10
 
     # Image:
     FILENAME = os.path.join('./Raw', '{}.tif'.format(IMAGE_NAME))
