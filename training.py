@@ -2,14 +2,16 @@ import tensorflow as tf
 import network
 import helper_functions as hf
 
+import sys
 import os
 from matplotlib.pyplot import imsave
 
 
 def main():
 
-    # Input parameters:
-    IMAGE_NAME = '1_Raw Image'
+    # System input parameters:
+    IMAGE_NAME = sys.argv[1]
+    # IMAGE_NAME = '1_Raw Image'
 
     # Training parameters:
     NETWORK_NAME = 'unet'
@@ -64,13 +66,18 @@ def main():
         save_filename = os.path.join(SAVE_FOLDER, 'input_image.tif')
         imsave(save_filename, input_image[0, :, :, 0], cmap='gray')
 
+        # Calculate initial metrics
+        snr_i = hf.calculate_metrics(input_image, input_image, 'snr')
+        with open(WRITE_FILENAME, 'a') as wf:
+            wf.write('\ninput_image\tN/A\t{}\tN/A'.format(snr_i))
+
         # Keep track of metrics
         track_iter = []
         track_loss = []
         track_snr = []
         track_ssim = []
 
-        for i in range(NUM_ITERATIONS):
+        for i in range(NUM_ITERATIONS+1):
             _, output_image, loss_i = sess.run([train_op, y, loss], feed_dict={z: input_noise,
                                                                                x: input_image
                                                                                }
