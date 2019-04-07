@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use('agg')
+
 import numpy as np
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
@@ -128,3 +131,11 @@ def calculate_metrics(input_image, output_image, metrics_name):
             np.var(feature)+np.var(output_noise)))
 
         return cnr
+
+def plot_metrics(x, y, title='', save_filename=None):
+    plt.figure()
+    plt.plot(x, y)
+    plt.title(title)
+    plt.xlabel('iterations')
+    if not (save_filename is None):
+        plt.savefig(save_filename)

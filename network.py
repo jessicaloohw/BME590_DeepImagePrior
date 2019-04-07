@@ -1,18 +1,21 @@
 import tensorflow as tf
 
-def inference(network_name, z, image_channels):
+def inference(network_name, z, height, width, channels):
     """
     (JESSICA) Network architecture
 
     :param network_name: to select architecture
                          string
     :param z: the input noise matrix
-              float32 [1, IMAGE_HEIGHT, IMAGE_WIDTH, 32]
-    :param image_height: int
-    :param image_width: int
-    :param image_channels: int
+              float32 [1, NOISE_HEIGHT, NOISE_WIDTH, NOISE_CHANNELS]
+    :param height: NOISE_HEIGHT
+                   int
+    :param width: NOISE_WIDTH
+                  int
+    :param channels: NOISE_CHANNELS
+                     int
     :return: output: the denoised image
-                     float32 tensor [1, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS]
+                     float32 tensor [1, IMAGE_HEIGHT, IMAGE_WIDTH, 1]
     """
 
     initializer = tf.contrib.layers.variance_scaling_initializer()
@@ -255,8 +258,8 @@ def inference(network_name, z, image_channels):
             print(x10)
 
         with tf.variable_scope('prediction'):
-            output = tf.layers.conv2d(x10, image_channels, [1, 1], [1, 1], "SAME",
-                                      activation=None,
+            output = tf.layers.conv2d(x10, 1, [1, 1], [1, 1], "SAME",
+                                      activation=tf.nn.sigmoid,
                                       use_bias=True,
                                       kernel_initializer=initializer,
                                       bias_initializer=tf.zeros_initializer(),
@@ -265,7 +268,119 @@ def inference(network_name, z, image_channels):
                                       name='conv')
             print(output)
 
-        return output
+    elif network_name == "deep_decoder":
+
+        # conv --> bilinear upsampling (if required) --> ReLU  --> normalization
+
+        with tf.variable_scope('decoder1'):
+            x = tf.layers.conv2d(z, channels, [1, 1], [1, 1], "SAME",
+                                 activation=None,
+                                 use_bias=True,
+                                 kernel_initializer=initializer,
+                                 bias_initializer=tf.zeros_initializer(),
+                                 kernel_regularizer=regularizer,
+                                 bias_regularizer=regularizer,
+                                 name='conv')
+            x = tf.image.resize_bilinear(images=x,
+                                         size=tf.convert_to_tensor([int(height*(2**1)), int(width*(2**1))]),
+                                         name='upsample')
+            x = tf.nn.relu(x, name="relu")
+            x = tf.layers.batch_normalization(x, training=True, name='bn')
+
+            print(x)
+
+        with tf.variable_scope('decoder2'):
+            x = tf.layers.conv2d(x, channels, [1, 1], [1, 1], "SAME",
+                                 activation=None,
+                                 use_bias=True,
+                                 kernel_initializer=initializer,
+                                 bias_initializer=tf.zeros_initializer(),
+                                 kernel_regularizer=regularizer,
+                                 bias_regularizer=regularizer,
+                                 name='conv')
+            x = tf.image.resize_bilinear(images=x,
+                                         size=tf.convert_to_tensor([int(height*(2**2)), int(width*(2**2))]),
+                                         name='upsample')
+            x = tf.nn.relu(x, name="relu")
+            x = tf.layers.batch_normalization(x, training=True, name='bn')
+
+            print(x)
+
+        with tf.variable_scope('decoder3'):
+            x = tf.layers.conv2d(x, channels, [1, 1], [1, 1], "SAME",
+                                 activation=None,
+                                 use_bias=True,
+                                 kernel_initializer=initializer,
+                                 bias_initializer=tf.zeros_initializer(),
+                                 kernel_regularizer=regularizer,
+                                 bias_regularizer=regularizer,
+                                 name='conv')
+            x = tf.image.resize_bilinear(images=x,
+                                         size=tf.convert_to_tensor([int(height*(2**3)), int(width*(2**3))]),
+                                         name='upsample')
+            x = tf.nn.relu(x, name="relu")
+            x = tf.layers.batch_normalization(x, training=True, name='bn')
+
+            print(x)
+
+        with tf.variable_scope('decoder4'):
+            x = tf.layers.conv2d(x, channels, [1, 1], [1, 1], "SAME",
+                                 activation=None,
+                                 use_bias=True,
+                                 kernel_initializer=initializer,
+                                 bias_initializer=tf.zeros_initializer(),
+                                 kernel_regularizer=regularizer,
+                                 bias_regularizer=regularizer,
+                                 name='conv')
+            x = tf.image.resize_bilinear(images=x,
+                                         size=tf.convert_to_tensor([int(height*(2**4)), int(width*(2**4))]),
+                                         name='upsample')
+            x = tf.nn.relu(x, name="relu")
+            x = tf.layers.batch_normalization(x, training=True, name='bn')
+
+            print(x)
+
+        with tf.variable_scope('decoder5'):
+            x = tf.layers.conv2d(x, channels, [1, 1], [1, 1], "SAME",
+                                 activation=None,
+                                 use_bias=True,
+                                 kernel_initializer=initializer,
+                                 bias_initializer=tf.zeros_initializer(),
+                                 kernel_regularizer=regularizer,
+                                 bias_regularizer=regularizer,
+                                 name='conv')
+            x = tf.nn.relu(x, name="relu")
+            x = tf.layers.batch_normalization(x, training=True, name='bn')
+
+            print(x)
+
+        with tf.variable_scope('decoder6'):
+            x = tf.layers.conv2d(x, channels, [1, 1], [1, 1], "SAME",
+                                 activation=None,
+                                 use_bias=True,
+                                 kernel_initializer=initializer,
+                                 bias_initializer=tf.zeros_initializer(),
+                                 kernel_regularizer=regularizer,
+                                 bias_regularizer=regularizer,
+                                 name='conv')
+            x = tf.nn.relu(x, name="relu")
+            x = tf.layers.batch_normalization(x, training=True, name='bn')
+
+            print(x)
+
+        with tf.variable_scope('prediction'):
+            output = tf.layers.conv2d(x, 1, [1, 1], [1, 1], "SAME",
+                                      activation=None,
+                                      use_bias=True,
+                                      kernel_initializer=initializer,
+                                      bias_initializer=tf.zeros_initializer(),
+                                      kernel_regularizer=regularizer,
+                                      bias_regularizer=regularizer,
+                                      name='conv')
+
+            print(output)
+
+    return output
 
 
 def loss(y, x, loss_name):
@@ -284,5 +399,7 @@ def loss(y, x, loss_name):
 
     # Create different losses here:
     if loss_name == 'mse':
-        loss = None
-        return loss
+        mse_loss = tf.reduce_mean((y-x)**2)
+        tf.losses.add_loss(mse_loss)
+        total_loss = tf.losses.get_total_loss()
+    return total_loss
