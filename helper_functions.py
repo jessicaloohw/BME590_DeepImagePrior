@@ -1,7 +1,11 @@
+import matplotlib
+matplotlib.use('agg')
+
 import numpy as np
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from skimage.measure import compare_ssim as calc_ssim
+import matplotlib.widgets as widgets
 from PIL import Image
 
 def get_training_image(filename):
@@ -53,6 +57,14 @@ def get_noise_matrix(h, w, c):
     """
     return noise
 
+def onselect(eclick, erelease):
+    "eclick and erelease are matplotlib events at press and release."
+    #print('startposition: (%f, %f)' % (eclick.xdata, eclick.ydata))
+    #print('endposition  : (%f, %f)' % (erelease.xdata, erelease.ydata))
+    #print('used button  : ', eclick.button)
+    global pos
+    pos = [int(eclick.xdata), int(eclick.ydata), int(erelease.xdata),
+           int(erelease.ydata)]
 
 def calculate_metrics(input_image, output_image, metrics_name):
     """
@@ -76,7 +88,7 @@ def calculate_metrics(input_image, output_image, metrics_name):
     # peak SNR
     if metrics_name == 'snr':
         output_noise = output_image[319:391, 836:908]
-        snr = 1/np.var(output_noise)
+        snr = output_image.max()/np.var(output_noise)
         """
         # debugging
         plt.imshow(input_noise)
@@ -99,4 +111,31 @@ def calculate_metrics(input_image, output_image, metrics_name):
         plt.show()
         print(ssim)
         """
+
         return ssim
+
+    # displays image. select foreground
+    elif metrics_name == 'cnr':
+        plt.imshow(output_image)
+        ax = plt.gca()
+        rs = widgets.RectangleSelector(ax, onselect, drawtype='box',
+                                       rectprops=dict(facecolor='red',
+                                                      edgecolor='black',
+                                                      alpha=0.5, fill=False))
+        plt.show()
+        """ debugging print(pos) """
+
+        feature = output_image[pos[1]:pos[3], pos[0]:pos[2]]
+        output_noise = output_image[319:391, 836:908]
+        cnr = np.abs(np.mean(feature)-np.mean(output_noise))/np.sqrt(0.5*(
+            np.var(feature)+np.var(output_noise)))
+
+        return cnr
+
+def plot_metrics(x, y, title='', save_filename=None):
+    plt.figure()
+    plt.plot(x, y)
+    plt.title(title)
+    plt.xlabel('iterations')
+    if not (save_filename is None):
+        plt.savefig(save_filename)

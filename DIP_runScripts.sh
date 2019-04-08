@@ -1,0 +1,26 @@
+#!/bin/bash
+
+export CUDA_VISIBLE_DEVICES=3
+
+python training.py '1_Raw Image'
+python training.py '2_R_Raw Image'
+python training.py '3_Raw Image'
+python training.py '4_Raw Image'
+python training.py '5_Raw Image'
+python training.py '6_Raw Image'
+python training.py '7_Raw Image'
+python training.py '8_Raw Image'
+python training.py '9_Raw Image'
+python training.py '10_Raw Image'
+python training.py '11_Raw Image'
+python training.py '12_Raw Image'
+python training.py '13_Raw Image'
+python training.py '14_Raw Image'
+python training.py '15_Raw Image'
+python training.py '16_Raw Image'
+python training.py '17_Raw Image'
+python training.py 'D_1_Raw Image'
+python training.py 'D_2_Raw Image'
+python training.py 'D_3_Raw Image'
+python training.py 'V22_Raw Image'
+python training.py 'V_1_Raw Image'
