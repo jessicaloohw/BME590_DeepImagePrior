@@ -71,9 +71,9 @@ def calculate_metrics(input_image, output_image, metrics_name):
     (DAVID) To calculate metrics for image quality evaluation
 
     :param input_image: [1, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS]
-                  float32 noisy image
+                        float32 ground truth
     :param output_image: [1, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS]
-        float32 denoised image
+                        float32 prediction
     :param metrics_name: snr or ssim
     :return metric: metric value (scalar)
                      float32
