@@ -44,6 +44,17 @@ def main():
         print("Error loading {}".format(AVERAGED_FILENAME))
         return
 
+    # Validate settings:
+    if not (NETWORK_NAME == "unet" or NETWORK_NAME == "deep_decoder"):
+        print("Error: {} network does not exist.".format(NETWORK_NAME))
+        return
+    if not (OPTIMIZER_TYPE == "sgd" or OPTIMIZER_TYPE == "adam"):
+        print("Error: {} optimizer does not exist.".format(OPTIMIZER_TYPE))
+        return
+    if not (LOSS_NAME == "mse" or LOSS_NAME == "l1" or LOSS_NAME == "mse_l1"):
+        print("Error: {} loss does not exist.".format(LOSS_NAME))
+        return
+
     # Create folder to save results:
     SAVE_FOLDER = os.path.join('./results', IMAGE_NAME)
     count = 0
@@ -62,9 +73,6 @@ def main():
         input_noise = hf.get_noise_matrix(input_image.shape[1], input_image.shape[2], 32)
     elif NETWORK_NAME == "deep_decoder":
         input_noise = hf.get_noise_matrix(input_image.shape[1]/(2**4), input_image.shape[2]/(2**4), 64)
-    else:
-        print("Error: {} network does not exist.".format(NETWORK_NAME))
-        return
 
     # Save inputs:
     save_filename = os.path.join(SAVE_FOLDER, 'input_image.tif')
@@ -97,8 +105,6 @@ def main():
         train_op = tf.train.GradientDescentOptimizer(learning_rate=LEARNING_RATE).minimize(loss)
     elif OPTIMIZER_TYPE == 'adam':
         train_op = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE).minimize(loss)
-    else:
-        print("Error: {} optimizer does not exist.".format(OPTIMIZER_TYPE))
 
     # Start session:
     with tf.Session() as sess:
