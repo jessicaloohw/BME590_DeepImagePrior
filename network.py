@@ -402,11 +402,12 @@ def loss(y, x, loss_name):
     if loss_name == 'mse':
         main_loss = tf.reduce_mean((y-x)**2)
     if loss_name == 'l1':
-        main_loss = tf.reduce_mean(np.abs(y-x))
+        main_loss = tf.reduce_mean(tf.abs(y-x))
     if loss_name == 'mse_l1':
-#https://iopscience.iop.org/article/10.1088/1612-202X/aaaeb0/meta
+    # https://iopscience.iop.org/article/10.1088/1612-202X/aaaeb0/meta
         reg = 0.1
-        main_loss = tf.reduce_sum(np.mean((y-x)**2)+reg*np.abs(y-x))
+        # main_loss = tf.reduce_sum(np.mean((y-x)**2)+reg*np.abs(y-x))
+        main_loss = tf.reduce_mean((y-x)**2) + reg*tf.reduce_mean(tf.abs(y-x))
     tf.losses.add_loss(main_loss)
     total_loss = tf.losses.get_total_loss()
     return total_loss

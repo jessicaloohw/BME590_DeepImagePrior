@@ -13,13 +13,13 @@ def main():
 
     # System input parameters:
     IMAGE_NAME = sys.argv[1]
-    # IMAGE_NAME = '1_Raw Image'
+    # IMAGE_NAME = '1'
 
     # Training parameters:
-    NETWORK_NAME = 'deep_decoder'
-    LOSS_NAME = 'mse'
+    NETWORK_NAME = 'deep_decoder'   # 'unet', 'deep_decoder'
+    LOSS_NAME = 'mse_l1'            # 'mse', 'l1', 'mse_l1'
     NUM_ITERATIONS = 1000
-    OPTIMIZER_TYPE = 'adam'
+    OPTIMIZER_TYPE = 'adam'         # 'sgd', 'adam'
     LEARNING_RATE = 0.0001
 
     # Saving parameters:
@@ -28,7 +28,21 @@ def main():
     ####################################################################################################################
 
     # Load image:
-    FILENAME = os.path.join('./Raw', '{}.tif'.format(IMAGE_NAME))
+    RAW_FILENAME = os.path.join('./Raw', '{}_Raw Image.tif'.format(IMAGE_NAME))
+    AVERAGED_FILENAME = os.path.join('./Averaged', '{}_Averaged Image.tif'.format(IMAGE_NAME))
+
+    # Get inputs:
+    try:
+        input_image = hf.get_training_image(RAW_FILENAME)
+    except:
+        print("Error loading {}".format(RAW_FILENAME))
+        return
+
+    try:
+        ground_truth = hf.get_training_image(AVERAGED_FILENAME)
+    except:
+        print("Error loading {}".format(AVERAGED_FILENAME))
+        return
 
     # Create folder to save results:
     SAVE_FOLDER = os.path.join('./results', IMAGE_NAME)
@@ -42,24 +56,26 @@ def main():
     with open(WRITE_FILENAME, 'a') as wf:
         wf.write('PARAMETERS\nNetwork: {}\nLoss: {}\nOptimizer: {}\nLearning rate: {}\nNumber of iterations: {}'.format(
             NETWORK_NAME, LOSS_NAME, OPTIMIZER_TYPE, LEARNING_RATE, NUM_ITERATIONS))
-        wf.write('\n\nIteration\tLoss\tSNR\tSSIM')
-
-    # Get inputs:
-    input_image = hf.get_training_image(FILENAME)
+        wf.write('\n\nIteration\tLoss\tSNR\tCNR\tSSIM')
 
     if NETWORK_NAME == "unet":
         input_noise = hf.get_noise_matrix(input_image.shape[1], input_image.shape[2], 32)
     elif NETWORK_NAME == "deep_decoder":
         input_noise = hf.get_noise_matrix(input_image.shape[1]/(2**4), input_image.shape[2]/(2**4), 64)
+    else:
+        print("Error: {} network does not exist.".format(NETWORK_NAME))
+        return
 
     # Save inputs:
     save_filename = os.path.join(SAVE_FOLDER, 'input_image.tif')
     imsave(save_filename, input_image[0, :, :, 0], cmap='gray')
 
     # Calculate initial metrics:
-    snr_i = hf.calculate_metrics(input_image, input_image, 'snr')
+    snr_i = hf.calculate_metrics(ground_truth, input_image, 'snr')
+    cnr_i = hf.calculate_metrics(ground_truth, input_image, 'cnr')
+    ssim_i = hf.calculate_metrics(ground_truth, input_image, 'ssim')
     with open(WRITE_FILENAME, 'a') as wf:
-        wf.write('\ninput_image\tN/A\t{}\tN/A'.format(snr_i))
+        wf.write('\ninput_image\tN/A\t{}\t{}\t{}'.format(snr_i, cnr_i, ssim_i))
 
     # Placeholders:
     z = tf.placeholder(tf.float32, shape=[1, None, None, input_noise.shape[3]]) # input noise
@@ -81,6 +97,8 @@ def main():
         train_op = tf.train.GradientDescentOptimizer(learning_rate=LEARNING_RATE).minimize(loss)
     elif OPTIMIZER_TYPE == 'adam':
         train_op = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE).minimize(loss)
+    else:
+        print("Error: {} optimizer does not exist.".format(OPTIMIZER_TYPE))
 
     # Start session:
     with tf.Session() as sess:
@@ -91,6 +109,7 @@ def main():
         track_iter = []
         track_loss = []
         track_snr = []
+        track_cnr = []
         track_ssim = []
 
         for i in range(NUM_ITERATIONS+1):
@@ -110,23 +129,26 @@ def main():
                 imsave(save_filename, output_image[0, :, :, 0], cmap='gray')
 
                 # Calculate metrics:
-                snr_i = hf.calculate_metrics(input_image, output_image, 'snr')
-                ssim_i = hf.calculate_metrics(input_image, output_image, 'ssim')
+                snr_i = hf.calculate_metrics(ground_truth, output_image, 'snr')
+                cnr_i = hf.calculate_metrics(ground_truth, output_image, 'cnr')
+                ssim_i = hf.calculate_metrics(ground_truth, output_image, 'ssim')
                 with open(WRITE_FILENAME, 'a') as wf:
-                    wf.write('\n{}\t{}\t{}\t{}'.format(i, loss_i, snr_i, ssim_i))
+                    wf.write('\n{}\t{}\t{}\t{}\t{}'.format(i, loss_i, snr_i, cnr_i, ssim_i))
 
                 # Display:
-                print('Iteration {}/{}\t| Loss: {}\tSNR: {}\tSSIM: {}'.format(i, NUM_ITERATIONS, loss_i, snr_i, ssim_i))
+                print('Iteration {}/{}\t| Loss: {}\tSNR: {}\tCNR: {}\tSSIM: {}'.format(i, NUM_ITERATIONS, loss_i, snr_i, cnr_i, ssim_i))
 
                 # Track:
                 track_iter.append(i)
                 track_loss.append(loss_i)
                 track_snr.append(snr_i)
+                track_cnr.append(cnr_i)
                 track_ssim.append(ssim_i)
 
         # Plot:
         hf.plot_metrics(track_iter, track_loss, 'loss', os.path.join(SAVE_FOLDER, 'loss.tif'))
         hf.plot_metrics(track_iter, track_snr, 'snr', os.path.join(SAVE_FOLDER, 'snr.tif'))
+        hf.plot_metrics(track_iter, track_cnr, 'cnr', os.path.join(SAVE_FOLDER, 'cnr.tif'))
         hf.plot_metrics(track_iter, track_ssim, 'ssim', os.path.join(SAVE_FOLDER, 'ssim.tif'))
 
     print('Completed.')
