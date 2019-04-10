@@ -114,8 +114,10 @@ def calculate_metrics(input_image, output_image, metrics_name):
 
         return ssim
 
-    # displays image. select foreground
+    # hard coded for image 1
+    # average CNR of 4 selected regions
     elif metrics_name == 'cnr':
+        """ interactive
         plt.imshow(output_image)
         ax = plt.gca()
         rs = widgets.RectangleSelector(ax, onselect, drawtype='box',
@@ -123,12 +125,24 @@ def calculate_metrics(input_image, output_image, metrics_name):
                                                       edgecolor='black',
                                                       alpha=0.5, fill=False))
         plt.show()
-        """ debugging print(pos) """
+        # print(pos)
 
         feature = output_image[pos[1]:pos[3], pos[0]:pos[2]]
+        """
         output_noise = output_image[319:391, 836:908]
-        cnr = np.abs(np.mean(feature)-np.mean(output_noise))/np.sqrt(0.5*(
-            np.var(feature)+np.var(output_noise)))
+        feature1 = output_image[51:67,197:269]
+        feature2 = output_image[38:67,568:643]
+        feature3 = output_image[115:140,158:241]
+        feature4 = output_image[131:165,763:809]
+        cnr1 = np.abs(np.mean(feature1)-np.mean(output_noise))/np.sqrt(0.5*(
+            np.var(feature1)+np.var(output_noise)))
+        cnr2 = np.abs(np.mean(feature2)-np.mean(output_noise))/np.sqrt(0.5*(
+            np.var(feature2)+np.var(output_noise)))
+        cnr3 = np.abs(np.mean(feature3)-np.mean(output_noise))/np.sqrt(0.5*(
+            np.var(feature3)+np.var(output_noise)))
+        cnr4 = np.abs(np.mean(feature4)-np.mean(output_noise))/np.sqrt(0.5*(
+            np.var(feature4)+np.var(output_noise)))
+        cnr = np.mean([cnr1,cnr2,cnr3,cnr4])
 
         return cnr
 
