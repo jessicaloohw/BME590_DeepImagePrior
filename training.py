@@ -11,33 +11,30 @@ def main():
 
     ########################################## USER INPUT ##############################################################
 
-    # System input parameters:
-    IMAGE_NAME = sys.argv[1]
-    # IMAGE_NAME = '1'
-
     # Training parameters:
-    NETWORK_NAME = 'deep_decoder'   # 'unet', 'deep_decoder'
-    LOSS_NAME = 'mse_l1'            # 'mse', 'l1', 'mse_l1'
-    NUM_ITERATIONS = 1000
-    OPTIMIZER_TYPE = 'adam'         # 'sgd', 'adam'
-    LEARNING_RATE = 0.0001
-
-    # Saving parameters:
-    ITERATIONS_TO_SAVE = 100
+    if len(sys.argv) == 8:
+        IMAGE_NAME = sys.argv[1]            # IMAGE_NAME = '1'
+        NETWORK_NAME = sys.argv[2]          # 'unet', 'deep_decoder'
+        LOSS_NAME = sys.argv[3]             # 'mse', 'l1', 'mse_l1'
+        OPTIMIZER_TYPE = sys.argv[4]        # 'sgd', 'adam'
+        LEARNING_RATE = float(sys.argv[5])
+        NUM_ITERATIONS = int(sys.argv[6])
+        ITERATIONS_TO_SAVE = int(sys.argv[7])
+    else:
+        print('Not enough input parameters.')
+        return
 
     ####################################################################################################################
 
-    # Load image:
+    # Load images:
     RAW_FILENAME = os.path.join('./Raw', '{}_Raw Image.tif'.format(IMAGE_NAME))
     AVERAGED_FILENAME = os.path.join('./Averaged', '{}_Averaged Image.tif'.format(IMAGE_NAME))
 
-    # Get inputs:
     try:
         input_image = hf.get_training_image(RAW_FILENAME)
     except:
         print("Error loading {}".format(RAW_FILENAME))
         return
-
     try:
         ground_truth = hf.get_training_image(AVERAGED_FILENAME)
     except:
@@ -69,6 +66,7 @@ def main():
             NETWORK_NAME, LOSS_NAME, OPTIMIZER_TYPE, LEARNING_RATE, NUM_ITERATIONS))
         wf.write('\n\nIteration\tLoss\tSNR\tCNR\tSSIM')
 
+    # Get input noise:
     if NETWORK_NAME == "unet":
         input_noise = hf.get_noise_matrix(input_image.shape[1], input_image.shape[2], 32)
     elif NETWORK_NAME == "deep_decoder":
@@ -77,6 +75,9 @@ def main():
     # Save inputs:
     save_filename = os.path.join(SAVE_FOLDER, 'input_image.tif')
     imsave(save_filename, input_image[0, :, :, 0], cmap='gray')
+
+    save_filename = os.path.join(SAVE_FOLDER, 'ground_truth.tif')
+    imsave(save_filename, ground_truth[0, :, :, 0], cmap='gray')
 
     # Calculate initial metrics:
     snr_i = hf.calculate_metrics(ground_truth, input_image, 'snr')
