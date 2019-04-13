@@ -27,8 +27,8 @@ def main():
     ####################################################################################################################
 
     # Load images:
-    RAW_FILENAME = os.path.join('./Raw', '{}_Raw Image.tif'.format(IMAGE_NAME))
-    AVERAGED_FILENAME = os.path.join('./Averaged', '{}_Averaged Image.tif'.format(IMAGE_NAME))
+    RAW_FILENAME = os.path.join('Raw', '{}_Raw Image.tif'.format(IMAGE_NAME))
+    AVERAGED_FILENAME = os.path.join('Averaged', '{}_Averaged Image.tif'.format(IMAGE_NAME))
 
     try:
         input_image = hf.get_training_image(RAW_FILENAME)
