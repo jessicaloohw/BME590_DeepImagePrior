@@ -384,7 +384,7 @@ def inference(network_name, z, height, width, channels):
     return output
 
 
-def loss(y, x, loss_name):
+def loss(y, x, loss_name, w_h=None, w_v=None, w_mse=None):
     """
     (KRISTEN) Loss function
 
@@ -401,13 +401,50 @@ def loss(y, x, loss_name):
     # Create different losses here:
     if loss_name == 'mse':
         main_loss = tf.reduce_mean((y-x)**2)
+
     if loss_name == 'l1':
         main_loss = tf.reduce_mean(tf.abs(y-x))
+
     if loss_name == 'mse_l1':
-    # https://iopscience.iop.org/article/10.1088/1612-202X/aaaeb0/meta
+        # https://iopscience.iop.org/article/10.1088/1612-202X/aaaeb0/meta
         reg = 0.1
-        # main_loss = tf.reduce_sum(np.mean((y-x)**2)+reg*np.abs(y-x))
         main_loss = tf.reduce_mean((y-x)**2) + reg*tf.reduce_mean(tf.abs(y-x))
+
+    if loss_name == 'mse_with_tv_reg':
+
+        # MSE:
+        mse_loss = w_mse * tf.reduce_mean((y-x)**2)
+
+        # Total variation:
+        tv_loss = w_h * tf.reduce_sum(tf.image.total_variation(y))
+
+        # Total:
+        main_loss = mse_loss + tv_loss
+        tf.losses.add_loss(main_loss)
+        total_loss = tf.losses.get_total_loss()
+
+        return total_loss, mse_loss, tv_loss, tf.constant(0.0)
+
+    if loss_name == 'mse_with_edge_reg':
+
+        # MSE:
+        mse_loss = w_mse * tf.reduce_mean((y - x) ** 2)
+
+        # Edges:
+        conv_h = tf.reshape(tf.constant([[1, 1, 1], [0, 0, 0], [-1, -1, -1]], dtype=tf.float32), [3,3,1,1])
+        conv_v = tf.reshape(tf.constant([[1, 0, -1],[1, 0, -1],[1, 0, -1]], dtype=tf.float32), [3,3,1,1])
+        edges_h = tf.abs(tf.nn.conv2d(y, conv_h, strides=[1,1,1,1], padding='SAME'))
+        edges_v = tf.abs(tf.nn.conv2d(y, conv_v, strides=[1,1,1,1], padding='SAME'))
+        edge_loss_h = w_h * tf.reduce_sum(edges_h)
+        edge_loss_v = w_v * tf.reduce_sum(edges_v)
+
+        # Total:
+        main_loss =  mse_loss + edge_loss_h + edge_loss_v
+        tf.losses.add_loss(main_loss)
+        total_loss = tf.losses.get_total_loss()
+
+        return total_loss, mse_loss, edge_loss_h, edge_loss_v
+
     tf.losses.add_loss(main_loss)
     total_loss = tf.losses.get_total_loss()
     return total_loss
