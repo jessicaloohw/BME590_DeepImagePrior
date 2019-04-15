@@ -1,7 +1,7 @@
 import tensorflow as tf
 import network
 import helper_functions as hf
-
+import numpy as np
 import sys
 import os
 from matplotlib.pyplot import imsave
@@ -157,10 +157,6 @@ def main():
                                                                                                      x: input_image})
 
             if i % ITERATIONS_TO_SAVE == 0:
-
-                # Contrast adjust:
-                output_image = hf.imadjust(output_image[0, :, :, 0])
-                output_image = output_image[None, :, :, None]
 
                 # Save image:
                 save_filename = os.path.join(SAVE_FOLDER, 'iteration_{}.tif'.format(i))

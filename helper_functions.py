@@ -10,6 +10,7 @@ from PIL import Image
 import bisect
 from numba import jit
 
+
 def get_training_image(filename):
     """
     (DAVID) Load image for training (includes any pre-processing etc.)
@@ -156,7 +157,6 @@ def plot_metrics(x, y, title='', save_filename=None):
     if not (save_filename is None):
         plt.savefig(save_filename)
 
-
 @jit
 def imadjust(src, tol=1, vin=[0,255], vout=(0,255)):
     # From:
@@ -166,14 +166,14 @@ def imadjust(src, tol=1, vin=[0,255], vout=(0,255)):
     # vout : dst image bounds
     # return : output img
 
-    assert len(src.shape) == 2 ,'Input image should be 2-dims'
+    assert len(src.shape) == 2,'Input image should be 2-dims'
 
     tol = max(0, min(100, tol))
 
     if tol > 0:
         # Compute in and out limits
         # Histogram
-        hist = np.histogram(src,bins=list(range(256)),range=(0,255))[0]
+        hist = np.histogram(src, bins=list(range(256)), range=(0,255))[0]
 
         # Cumulative histogram
         cum = hist.copy()
