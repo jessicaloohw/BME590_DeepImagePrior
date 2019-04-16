@@ -69,7 +69,7 @@ def onselect(eclick, erelease):
     pos = [int(eclick.xdata), int(eclick.ydata), int(erelease.xdata),
            int(erelease.ydata)]
 
-def calculate_metrics(input_image, output_image, metrics_name, image_number):
+def calculate_metrics(input_image, output_image, metrics_name):
     """
     (DAVID) To calculate metrics for image quality evaluation
 
@@ -77,7 +77,6 @@ def calculate_metrics(input_image, output_image, metrics_name, image_number):
                         float32 ground truth
     :param output_image: [1, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS]
                         float32 prediction
-    :param image_number: which image is it
     :param metrics_name: snr or ssim
     :return metric: metric value (scalar)
                      float32
@@ -134,31 +133,10 @@ def calculate_metrics(input_image, output_image, metrics_name, image_number):
         feature = output_image[pos[1]:pos[3], pos[0]:pos[2]]
         """
         output_noise = output_image[319:391, 836:908]
-        if image_number == 10:
-            feature1 = output_image[120:160,105:145]
-            feature2 = output_image[185:205,72:132]
-            feature3 = output_image[125:155,710:740]
-            feature4 = output_image[215:250,175:215]
-        elif image_number == 11:
-            feature1 = output_image[169:209, 216:256]
-            feature2 = output_image[248:268, 205:265]
-            feature3 = output_image[138:168, 730:760]
-            feature4 = output_image[281:316, 53:93]
-        elif image_number == 12:
-            feature1 = output_image[191:231, 303:343]
-            feature2 = output_image[260:280, 285:345]
-            feature3 = output_image[182:212, 763:793]
-            feature4 = output_image[258:293, 815:855]
-        elif image_number == 13:
-            feature1 = output_image[187:227, 303:343]
-            feature2 = output_image[255:275, 298:358]
-            feature3 = output_image[150:180, 699:729]
-            feature4 = output_image[276:311, 492:532]
-        elif image_number == 14:
-            feature1 = output_image[26:66, 265:305]
-            feature2 = output_image[96:116, 115:175]
-            feature3 = output_image[37:67, 667:697]
-            feature4 = output_image[115:150, 120:160]
+        feature1 = output_image[51:67,197:269]
+        feature2 = output_image[38:67,568:643]
+        feature3 = output_image[115:140,158:241]
+        feature4 = output_image[131:165,763:809]
         cnr1 = np.abs(np.mean(feature1)-np.mean(output_noise))/(np.sqrt(0.5*(
             np.var(feature1)+np.var(output_noise))) + 1e-8)
         cnr2 = np.abs(np.mean(feature2)-np.mean(output_noise))/(np.sqrt(0.5*(
