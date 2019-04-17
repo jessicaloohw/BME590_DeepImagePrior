@@ -143,21 +143,25 @@ def calculate_metrics(input_image, output_image, metrics_name, image_number):
             feature3 = output_image[117:147, 227:257]
             feature4 = output_image[139:174, 316:356]
         elif image_number == '2_R':
+ 	    print(image_number)
             feature1 = output_image[94:134, 243:283]
             feature2 = output_image[90:110, 660:720]
             feature3 = output_image[151:181, 612:642]
             feature4 = output_image[178:213, 817:857]
         elif image_number == '3':
+	    print(image_number)
             feature1 = output_image[116:156, 166:206]
             feature2 = output_image[104:124, 536:596]
             feature3 = output_image[171:201, 171:201]
             feature4 = output_image[188:223, 65:105]
         elif image_number == '4':
+            print(image_number)
             feature1 = output_image[114:154, 263:303]
             feature2 = output_image[131:151, 689:749]
             feature3 = output_image[211:241, 474:504]
             feature4 = output_image[185:220, 60:100]
         elif image_number == '5':
+            print(image_number)
             feature1 = output_image[70:110, 255:295]
             feature2 = output_image[75:95, 699:759]
             feature3 = output_image[152:182, 416:446]
