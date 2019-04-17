@@ -1,3 +1,4 @@
+
 import matplotlib
 matplotlib.use('agg')
 
@@ -48,7 +49,9 @@ def get_noise_matrix(h, w, c):
     :param c: number of channels
     :return: noise [1, h, w, c]
     """
-
+    h = int(h)
+    w = int(w)
+    c = int(c)
     noise = np.random.rand(h, w, c)
     noise = np.expand_dims(noise, axis=0)
 
@@ -68,7 +71,7 @@ def onselect(eclick, erelease):
     pos = [int(eclick.xdata), int(eclick.ydata), int(erelease.xdata),
            int(erelease.ydata)]
 
-def calculate_metrics(input_image, output_image, metrics_name):
+def calculate_metrics(input_image, output_image, metrics_name, image_number):
     """
     (DAVID) To calculate metrics for image quality evaluation
 
@@ -76,6 +79,7 @@ def calculate_metrics(input_image, output_image, metrics_name):
                         float32 ground truth
     :param output_image: [1, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS]
                         float32 prediction
+    :param image_number: which image is it
     :param metrics_name: snr or ssim
     :return metric: metric value (scalar)
                      float32
@@ -132,10 +136,36 @@ def calculate_metrics(input_image, output_image, metrics_name):
         feature = output_image[pos[1]:pos[3], pos[0]:pos[2]]
         """
         output_noise = output_image[319:391, 836:908]
-        feature1 = output_image[51:67,197:269]
-        feature2 = output_image[38:67,568:643]
-        feature3 = output_image[115:140,158:241]
-        feature4 = output_image[131:165,763:809]
+        if image_number == '1':
+            print(image_number)
+            feature1 = output_image[45:85, 250:290]
+            feature2 = output_image[30:50, 600:660]
+            feature3 = output_image[117:147, 227:257]
+            feature4 = output_image[139:174, 316:356]
+        elif image_number == '2_R':
+ 	    print(image_number)
+            feature1 = output_image[94:134, 243:283]
+            feature2 = output_image[90:110, 660:720]
+            feature3 = output_image[151:181, 612:642]
+            feature4 = output_image[178:213, 817:857]
+        elif image_number == '3':
+	    print(image_number)
+            feature1 = output_image[116:156, 166:206]
+            feature2 = output_image[104:124, 536:596]
+            feature3 = output_image[171:201, 171:201]
+            feature4 = output_image[188:223, 65:105]
+        elif image_number == '4':
+            print(image_number)
+            feature1 = output_image[114:154, 263:303]
+            feature2 = output_image[131:151, 689:749]
+            feature3 = output_image[211:241, 474:504]
+            feature4 = output_image[185:220, 60:100]
+        elif image_number == '5':
+            print(image_number)
+            feature1 = output_image[70:110, 255:295]
+            feature2 = output_image[75:95, 699:759]
+            feature3 = output_image[152:182, 416:446]
+            feature4 = output_image[158:193, 263:303]
         cnr1 = np.abs(np.mean(feature1)-np.mean(output_noise))/(np.sqrt(0.5*(
             np.var(feature1)+np.var(output_noise))) + 1e-8)
         cnr2 = np.abs(np.mean(feature2)-np.mean(output_noise))/(np.sqrt(0.5*(

@@ -1,8 +1,9 @@
 #!/bin/bash
 
-export CUDA_VISIBLE_DEVICES=2
-
-python training.py '1' 'deep_decoder' 'mse' 'adam' 0.0001 10 1
+python training.py '1' 'deep_decoder' 'mse_l1' 'adam' 0.0001 50000 1000
+python training.py '10' 'unet' 'mse_l1' 'adam' 0.0001 10000 500
+python training.py '10' 'deep_decoder' 'mse_l1' 'sgd' 0.0001 10000 500
+python training.py '10' 'unet' 'mse_l1' 'sgd' 0.0001 10000 500
 #python training.py '2_R'
 #python training.py '3'
 #python training.py '4'
