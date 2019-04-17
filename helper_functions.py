@@ -1,3 +1,4 @@
+
 import matplotlib
 matplotlib.use('agg')
 
@@ -48,7 +49,9 @@ def get_noise_matrix(h, w, c):
     :param c: number of channels
     :return: noise [1, h, w, c]
     """
-
+    h = int(h)
+    w = int(w)
+    c = int(c)
     noise = np.random.rand(h, w, c)
     noise = np.expand_dims(noise, axis=0)
 

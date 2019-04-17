@@ -163,9 +163,9 @@ def main():
                 imsave(save_filename, output_image[0, :, :, 0], cmap='gray')
 
                 # Calculate metrics:
-                snr_i = hf.calculate_metrics(ground_truth, output_image, 'snr')
-                cnr_i = hf.calculate_metrics(ground_truth, output_image, 'cnr')
-                ssim_i = hf.calculate_metrics(ground_truth, output_image, 'ssim')
+                snr_i = hf.calculate_metrics(ground_truth, output_image, 'snr', IMAGE_NAME)
+                cnr_i = hf.calculate_metrics(ground_truth, output_image, 'cnr', IMAGE_NAME)
+                ssim_i = hf.calculate_metrics(ground_truth, output_image, 'ssim', IMAGE_NAME)
                 with open(WRITE_FILENAME, 'a') as wf:
                     wf.write('\n{}\t{}\t{}\t{}\t{}'.format(i, loss_i, snr_i, cnr_i, ssim_i))
 
