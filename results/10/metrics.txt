@@ -1,9 +1,0 @@
-PARAMETERS
-Network: deep_decoder
-Loss: mse_l1
-Optimizer: adam
-Learning rate: 0.0001
-Number of iterations: 10000
-
-Iteration	Loss	SNR	CNR	SSIM
-input_image	N/A	59.2044787182	1.00589203867	0.0912860920243
