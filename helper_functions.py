@@ -28,7 +28,7 @@ def get_training_image(filename):
     # normalize
     image = image/255
     # creating channels and changes shape to expected output
-    if image.shape[2] == 4:
+    if len(image.shape) > 2:
         image = image[:, :, 0]
     image = np.expand_dims(image, axis=0)
     image = np.expand_dims(image, axis=3)
