@@ -148,11 +148,18 @@ def calculate_metrics(input_image, output_image, metrics_name):
 
         return cnr
 
-def plot_metrics(x, y, title='', save_filename=None):
+def plot_metrics(x, y, title='', save_filename=None, calculate_max=False, calculate_min=False):
+
+    if calculate_max:
+        title = '{} | max @ iteration {}'.format(title, x[np.argmax(y)])
+    if calculate_min:
+        title = '{} | min @ iteration {}'.format(title, x[np.argmin(y)])
+
     plt.figure()
     plt.plot(x, y)
     plt.title(title)
     plt.xlabel('iterations')
+
     if not (save_filename is None):
         plt.savefig(save_filename)
 
@@ -188,7 +195,7 @@ def imadjust(src, tol=1, vin=[0,255], vout=(0,255)):
         vin[1] = bisect.bisect_left(cum, upp_bound)
 
     # Stretching
-    scale = (vout[1] - vout[0]) / (vin[1] - vin[0])
+    scale = (vout[1] - vout[0]) / (vin[1] - vin[0] + 1e-8)
     for r in range(dst.shape[0]):
         for c in range(dst.shape[1]):
             vs = max(src[r,c] - vin[0], 0)

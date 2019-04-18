@@ -7,7 +7,7 @@ def main():
     ######################################### USER-INPUT ###############################################
 
     FOLDER = ('/home/ubuntu/PycharmProjects/DeepImagePrior/BME590_DeepImagePrior/results'
-              '/PARAMETERS_D/5(1)')
+              '/UNET_L1/2_R')
     ITER_NUM = 50000
 
     ####################################################################################################
