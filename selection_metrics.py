@@ -1,15 +1,14 @@
 import os
-from matplotlib.image import imread, imsave
 import helper_functions as hf
-# from tqdm import tqdm
+from tqdm import tqdm
 
 def main():
 
     ####################################### USER-INPUT ##################################################
 
     FOLDER = ('/home/ubuntu/PycharmProjects/DeepImagePrior/BME590_DeepImagePrior'
-              '/results/UNET_MSE_EDGE/1(1)')
-    IMAGE_NAME = '1'
+              '/results/UNET_MSE/5')
+    IMAGE_NAME = '5'
     START_ITER = 0
     END_ITER = 50000
 
@@ -49,7 +48,7 @@ def main():
 
     print('Calculating metrics...')
 
-    for i in range(START_ITER, END_ITER+1, 1000):
+    for i in tqdm(range(START_ITER, END_ITER+1, 1000)):
 
         # Load reconstructed image:
         denoised_filename = os.path.join(FOLDER, 'iteration_{}.tif'.format(i))
