@@ -3,7 +3,7 @@ import numpy as np
 
 def inference(network_name, z, height, width, channels):
     """
-    (JESSICA) Network architecture
+    Network architecture
 
     :param network_name: to select architecture
                          string
@@ -386,7 +386,7 @@ def inference(network_name, z, height, width, channels):
 
 def loss(y, x, loss_name, w_h=None, w_v=None, w_mse=None):
     """
-    (KRISTEN) Loss function
+    Loss function
 
     :param y: the predicted output
               float32 tensor [1, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS]

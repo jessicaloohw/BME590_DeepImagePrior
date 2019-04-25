@@ -121,7 +121,7 @@ def main():
     if NETWORK_NAME == "deep_decoder":
         update_op = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
 
-    # (KRISTEN) Create different optimizers here:
+    # Create different optimizers here:
     if OPTIMIZER_TYPE == "sgd":
         train_op = tf.train.GradientDescentOptimizer(learning_rate=LEARNING_RATE).minimize(loss)
     elif OPTIMIZER_TYPE == "adam":

@@ -13,7 +13,7 @@ import bisect
 
 def get_training_image(filename):
     """
-    (DAVID) Load image for training (includes any pre-processing etc.)
+    Load image for training (includes any pre-processing etc.)
 
     :param filename: the filename of the image
                      string
@@ -44,7 +44,7 @@ def get_training_image(filename):
 
 def get_noise_matrix(h, w, c):
     """
-    (DAVID) Create random uniform noise matrix
+    Create random uniform noise matrix
 
     :param h: height
     :param w: width
@@ -75,7 +75,7 @@ def onselect(eclick, erelease):
 
 def calculate_metrics(input_image, output_image, metrics_name, image_number):
     """
-    (DAVID) To calculate metrics for image quality evaluation
+    To calculate metrics for image quality evaluation
 
     :param input_image: [1, IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS]
                         float32 ground truth
@@ -121,7 +121,6 @@ def calculate_metrics(input_image, output_image, metrics_name, image_number):
         """
         return ssim
 
-    # hard coded for image 1
     # average CNR of 4 selected regions
     elif metrics_name == 'cnr':
         """ interactive
